@@ -279,6 +279,8 @@ common_taxa <- SI.year1 %>%
   summarise(common = Reduce(intersect, taxa)) %>%
   pull(common)
 
+common_taxa <- as.data.frame(common_taxa) # amphinemura the only taxa that is in all
+# sites and have SI for may
 
 # These are the top and bottom target taxa across sites, we know not all will have
 # SI for them (see SECPROD_SUMMARY_TOTAL excel)
@@ -313,6 +315,18 @@ filterSI.season <- SI.Season %>%
   )
 
 
+amphi_filterSI.season <- SI.Season %>%
+  filter(Taxa == "Amphinemura")
+
+amphi_filterSI.annual <- SI.year1 %>%
+  filter(Taxa == "Amphinemura")
+
+sten_filterSI.season <- SI.Season %>%
+  filter(Taxa == "Stenonema")
+
+sten_filterSI.annual <- SI.year1 %>%
+  filter(Taxa == "Stenonema")
+
 # Color Scheme stuff
 library(RColorBrewer)
 display.brewer.all()
@@ -322,27 +336,12 @@ library(rcartocolor)
 
 # Plots for taxa signatures
 #can easily sub SI.year1 for filterSI.year1 to see original plots
-ggplot(filterSI.year1, aes(x = d13C, y = d15N, color = SC.Category, shape = FFG)) +
-  geom_point(size = 3) +
-  labs(
-    x = "d13C",
-    y = "d15N",
-    color = "SC Category",
-    shape = "FFG"
-  ) +
-  scale_color_manual(
-    values = c(
-      "REF" = "#1b9e77",
-      "MID" = "#d95f02",
-      "HIGH" = "#7570b3"
-    )
-  )
 
 
 # With names of taxa
 library(ggrepel)
 
-ggplot(filterSI.year1, aes(x = d13C, y = d15N, color = SC.Category, shape = FFG)) +
+ggplot(filterSI.year1, aes(x = d13C.permil, y = d15N, color = SC.Category, shape = FFG)) +
   geom_point(size = 3) +
   geom_text_repel(aes(label = Taxa), size = 3, show.legend = FALSE, max.overlaps = 50) +
   labs(
@@ -361,7 +360,41 @@ ggplot(filterSI.year1, aes(x = d13C, y = d15N, color = SC.Category, shape = FFG)
   theme_minimal()
 
 
-# For Season
+# Amphinemura case study
+ggplot(amphi_filterSI.annual, aes(x = d13C, y = d15N, color = SC.Category, shape = FFG)) +
+  geom_point(size = 3) +
+  labs(
+    x = "d13C",
+    y = "d15N",
+    color = "SC Category",
+    shape = "FFG"
+  ) +
+  scale_color_manual(
+    values = c(
+      "REF" = "#1b9e77",
+      "MID" = "#d95f02",
+      "HIGH" = "#7570b3"
+    )
+  ) + theme_minimal()
+
+# Stenonema case study
+ggplot(sten_filterSI.annual, aes(x = d13C, y = d15N, color = SC.Category, shape = FFG)) +
+  geom_point(size = 3) +
+  labs(
+    x = "d13C",
+    y = "d15N",
+    color = "SC Category",
+    shape = "FFG"
+  ) +
+  scale_color_manual(
+    values = c(
+      "REF" = "#1b9e77",
+      "MID" = "#d95f02",
+      "HIGH" = "#7570b3"
+    )
+  ) + theme_minimal()
+
+# For Season----------------------
 
 ggplot(filterSI.season, aes(x = season.d13C, y = season.d15N,
                             color = SC.Category, shape = FFG)) +
@@ -390,6 +423,32 @@ ggplot(filterSI.season, aes(x = season.d13C, y = season.d15N,
   )
 
 
+# Amphi case study
+ggplot(amphi_filterSI.season, aes(x = season.d13C, y = season.d15N,
+                            color = SC.Category, shape = FFG)) +
+  facet_wrap(~Month) +
+  geom_point(size = 3) +
+  geom_text_repel(aes(label = Taxa), size = 3, show.legend = FALSE, max.overlaps = 50) +
+  labs(
+    x = "d13C",
+    y = "d15N",
+    color = "SC Category",
+    shape = "FFG"
+  ) +
+  scale_color_manual(
+    values = c(
+      "REF" = "#1b9e77",
+      "MID" = "#d95f02",
+      "HIGH" = "#7570b3"
+    )
+  ) +
+  theme_minimal() +
+  theme(
+    strip.background = element_rect(fill = "gray90", color = "black", linewidth = 0.5),
+    strip.text = element_text(face = "bold"),
+    panel.spacing = unit(1, "lines"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5)  # ✅ adds border
+  )
 
 # Summarizing average isotope signatures for each FFG
 FFGsummary_df <- filterSI.year1 %>%
@@ -717,6 +776,10 @@ SI.season.macro.food <- SI.season.macro.food %>%
 SI.season.macro.food <- SI.season.macro.food %>%
   mutate(font_label = ifelse(Label %in% c("Algae", "CBOM", "FBOM"), "bold", "plain")) # Ensuring that food resources are bolded
 
+amphi_SI.season.macro.food <- SI.season.macro.food %>%
+  filter(Label %in% c("Amphinemura", "CBOM", "FBOM", "Algae"),
+         Month == "May 2024")
+
 ggplot(SI.season.macro.food, aes(x = d13C, y = d15N,
                                  color = SC.Category, shape = FFG)) +
   facet_wrap(~Month, scales = "free") +
@@ -744,6 +807,34 @@ ggplot(SI.season.macro.food, aes(x = d13C, y = d15N,
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5)
   )
 
+
+# Amphi case study
+ggplot(amphi_SI.season.macro.food, aes(x = d13C, y = d15N,
+                                 color = SC.Category, shape = FFG)) +
+  facet_wrap(~Month, scales = "free") +
+  geom_point(size = 3) +
+  geom_text_repel(aes(label = Label, fontface = font_label),
+                  size = 3, show.legend = FALSE, max.overlaps = 50) +
+  labs(
+    x = "d13C",
+    y = "d15N",
+    color = "SC Category",
+    shape = "FFG"
+  ) +
+  scale_color_manual(
+    values = c(
+      "REF" = "#1b9e77",
+      "MID" = "#d95f02",
+      "HIGH" = "#7570b3"
+    )
+  ) +
+  theme_minimal() +
+  theme(
+    strip.background = element_rect(fill = "gray90", color = "black", linewidth = 0.5),
+    strip.text = element_text(face = "bold"),
+    panel.spacing = unit(1, "lines"),
+    panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5)
+  )
 
 
 # Do this again but for annual values--------------------------

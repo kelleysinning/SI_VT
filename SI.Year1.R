@@ -271,7 +271,7 @@ SI.Season$SC.Category <- factor(SI.Season$SC.Category, levels = c("REF","MID","H
 SI.Season$SC.Level <- factor(SI.Season$SC.Level, levels = c("16","40","77","293","350","447","1048","1083","1185"))
 SI.Season$FFG <- factor(SI.Season$FFG, levels = c("Scraper","Coleoptera Scraper","Shredder","Predator","Collector-Gatherer","Collector-Filterer"))
 
-# What taxa could we compare across season
+# What taxa could we compare across season, found in all streams
 common_taxa <- SI.year1 %>%
   filter(Site %in% c("EAS", "FRY", "RIC")) %>%
   group_by(Site) %>%

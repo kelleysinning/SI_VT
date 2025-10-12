@@ -341,7 +341,7 @@ library(rcartocolor)
 # With names of taxa
 library(ggrepel)
 
-ggplot(filterSI.year1, aes(x = d13C.permil, y = d15N, color = SC.Category, shape = FFG)) +
+ggplot(filterSI.year1, aes(x = d13C, y = d15N, color = SC.Category, shape = FFG)) +
   geom_point(size = 3) +
   geom_text_repel(aes(label = Taxa), size = 3, show.legend = FALSE, max.overlaps = 50) +
   labs(
@@ -376,6 +376,7 @@ ggplot(amphi_filterSI.annual, aes(x = d13C, y = d15N, color = SC.Category, shape
       "HIGH" = "#7570b3"
     )
   ) + theme_minimal()
+
 
 # Stenonema case study
 ggplot(sten_filterSI.annual, aes(x = d13C, y = d15N, color = SC.Category, shape = FFG)) +
@@ -1213,3 +1214,51 @@ ggplot(SI.season.macro.food.Atomic,
     strip.text = element_text(face = "bold"),
     panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5)
   )
+
+
+#STATS-----------------
+
+
+install.packages("lme4")      
+install.packages("lmerTest")  
+library(lme4)
+library(lmerTest)
+
+
+# Does δ¹³C predict δ¹⁵N across your samples, accounting for differences among sites?
+
+model <- lmer(d15N ~ d13C + (1|Site),
+              data = filterSI.year1)
+summary(model) # significant
+
+model <- lm(d15N ~ d13C,
+              data = amphi_filterSI.annual)
+summary(model) # not significant
+
+# Does δ¹³C predict δ¹⁵N after accounting for variation among sites and months 
+# (i.e., seasonal effects)?
+model <- lmer(season.d15N ~ season.d13C + (1|Site) + (1|Month),
+              data = filterSI.season)
+summary(model) # significant
+
+
+# How does δ¹⁵N vary among functional feeding groups (FFG), among stream categories 
+# (SC.Category), and do those effects interact?
+model <- lm(d15N ~ FFG*SC.Category,
+            data = filterSI.year1)
+summary(model) # significant in high SC vs low for scrapers
+
+model <- lm(d15N ~ FFG,
+            data = filterSI.year1)
+summary(model) # NS: N doesnt differ across FFG
+
+model <- lm(d15N ~ SC.Category,
+            data = filterSI.year1)
+summary(model) # significant δ¹⁵N increases with stream category
+
+
+model <- lmer(season.d15N ~ FFG*SC.Category + (1|Month),
+            data = filterSI.season)
+summary(model)
+
+

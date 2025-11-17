@@ -1118,12 +1118,3 @@ ggplot(SI.season.macro.food.Atomic,
 
 
 
-
-# Attempting a mixing model
-
-install.packages("MixSIAR")
-library(MixSIAR)
-
-
-
-

@@ -35,9 +35,25 @@ SI <- SI %>%
   mutate(Taxa = ifelse(Taxa == "Acroneuria ", "Acroneuria", Taxa))
 
 SI <- SI %>%
+  mutate(Taxa = ifelse(Taxa == "Perlidae", "Acroneuria", Taxa))
+
+SI <- SI %>%
+  mutate(Taxa = ifelse(Taxa == "Stenacron", "Stenonema", Taxa))
+
+SI <- SI %>%
+  mutate(Taxa = ifelse(Taxa == "Leuctridae", "Leuctra", Taxa))
+
+SI <- SI %>%
+  mutate(Taxa = ifelse(Taxa == "Leuctra ", "Leuctra", Taxa))
+
+SI <- SI %>%
+  mutate(Taxa = ifelse(Taxa == "Diplectrona ", "Diplectrona", Taxa))
+
+SI <- SI %>%
+  mutate(Taxa = ifelse(Taxa == "Peltoperlidae", "Peltoperla", Taxa))
+
+SI <- SI %>%
   mutate(Month = ifelse(Month == "October ", "October", Month))
-
-
 # Averaging replicates across seasons
 SI.Season <- SI %>%
   group_by(Site, Month, Taxa) %>%
@@ -83,6 +99,9 @@ SI.year1 <- SI.year1 %>%
 SI.year1 <- SI.year1 %>%
   filter(Taxa != "Sciaridae")
 
+SI.year1 <- SI.year1 %>%
+  filter(Taxa != "Helichus")
+
 
 SI.Season <- SI.Season %>%
   filter(Taxa != "Arcynopteryx dichroa")
@@ -120,6 +139,7 @@ SI.year1$FFG[SI.year1$Taxa=="Dicranota"]="Predator"
 SI.year1$FFG[SI.year1$Taxa=="Diplectrona"]="Collector-Filterer"
 SI.year1$FFG[SI.year1$Taxa=="Dixa"]="Collector-Gatherer"
 SI.year1$FFG[SI.year1$Taxa=="Drunella"]="Scraper"
+SI.year1$FFG[SI.year1$Taxa=="Dytiscidae"]="Predator"
 SI.year1$FFG[SI.year1$Taxa=="Dolophilodes"]="Collector-Filterer"
 SI.year1$FFG[SI.year1$Taxa=="Ectopria"]="Coleoptera Scraper"
 SI.year1$FFG[SI.year1$Taxa=="Ephemera"]="Collector-Gatherer"
@@ -134,13 +154,16 @@ SI.year1$FFG[SI.year1$Taxa=="Hydropsychidae"]="Collector-Filterer"
 SI.year1$FFG[SI.year1$Taxa=="Isoperla"]="Predator"
 SI.year1$FFG[SI.year1$Taxa=="Lanthus"]="Predator"
 SI.year1$FFG[SI.year1$Taxa=="Lepidostoma"]= "Shredder"
+SI.year1$FFG[SI.year1$Taxa=="Leptophlebiidae"]= "Collector-Gatherer"
 SI.year1$FFG[SI.year1$Taxa=="Leuctra"]="Shredder"
 SI.year1$FFG[SI.year1$Taxa=="Molophilus"]="Shredder"
+SI.year1$FFG[SI.year1$Taxa=="Microvelia"]="Predator"
 SI.year1$FFG[SI.year1$Taxa=="Macronychus"]="Collector-Gatherer"
 SI.year1$FFG[SI.year1$Taxa=="Neophylax"]="Scraper"
 SI.year1$FFG[SI.year1$Taxa=="Nigronia"]="Predator"
 SI.year1$FFG[SI.year1$Taxa=="Oligochaeta"]="Collector-Gatherer"
 SI.year1$FFG[SI.year1$Taxa=="Orthocladiinae"]="Collector-Gatherer"
+SI.year1$FFG[SI.year1$Taxa=="Paracapnia"]="Shredder"
 SI.year1$FFG[SI.year1$Taxa=="Peltoperla"]="Shredder"
 SI.year1$FFG[SI.year1$Taxa=="Peltoperlidae"]="Shredder"
 SI.year1$FFG[SI.year1$Taxa=="Perlesta"]="Predator"
@@ -230,6 +253,7 @@ SI.Season$FFG[SI.Season$Taxa=="Macronychus"]="Collector-Gatherer"
 SI.Season$FFG[SI.Season$Taxa=="Neophylax"]="Scraper"
 SI.Season$FFG[SI.Season$Taxa=="Nigronia"]="Predator"
 SI.Season$FFG[SI.Season$Taxa=="Oligochaeta"]="Collector-Gatherer"
+SI.Season$FFG[SI.Season$Taxa=="Paracapnia"]="Shredder"
 SI.Season$FFG[SI.Season$Taxa=="Orthocladiinae"]="Collector-Gatherer"
 SI.Season$FFG[SI.Season$Taxa=="Peltoperla"]="Shredder"
 SI.Season$FFG[SI.Season$Taxa=="Peltoperlidae"]="Shredder"
@@ -316,12 +340,26 @@ filterSI.year1 <- SI.year1 %>%
       (Site == "RIC" & Taxa %in% taxa_RIC)
   )
 
+
+# ALL target FFG. not just "target" taxa
+filterSI.year1.SITE <- SI.year1 %>% 
+  filter(Site %in% c("EAS", "FRY", "RIC"),
+         (FFG %in% c("Scraper", "Coleoptera Scraper", "Shredder")))
+
+
 filterSI.season <- SI.Season %>%
   filter(
     (Site == "EAS" & Taxa %in% taxa_EAS) |
       (Site == "FRY" & Taxa %in% taxa_FRY) |
       (Site == "RIC" & Taxa %in% taxa_RIC)
   )
+
+# ALL target FFG. not just "target" taxa
+filterSI.season.SITE <- SI.Season %>%
+  filter(Site %in% c("EAS", "FRY", "RIC"),
+         (FFG %in% c("Scraper", "Coleoptera Scraper", "Shredder")))
+
+
 
 
 amphi_filterSI.season <- SI.Season %>%
@@ -353,7 +391,7 @@ library(rcartocolor)
 # With names of taxa
 library(ggrepel)
 
-ggplot(filterSI.year1, aes(x = d13C, y = d15N, color = SC.Category, shape = FFG)) +
+ggplot(filterSI.year1.SITE, aes(x = d13C, y = d15N, color = SC.Category, shape = FFG)) +
   geom_point(size = 3) +
   geom_text_repel(aes(label = Taxa), size = 3, show.legend = FALSE, max.overlaps = 50) +
   labs(
@@ -409,7 +447,7 @@ ggplot(sten_filterSI.annual, aes(x = d13C, y = d15N, color = SC.Category, shape 
 
 # For Season----------------------
 
-ggplot(filterSI.season, aes(x = season.d13C, y = season.d15N,
+ggplot(filterSI.season.SITE, aes(x = season.d13C, y = season.d15N,
                             color = SC.Category, shape = FFG)) +
   facet_wrap(~Month) +
   geom_point(size = 3) +
@@ -464,7 +502,7 @@ ggplot(amphi_filterSI.season, aes(x = season.d13C, y = season.d15N,
   )
 
 # Summarizing average isotope signatures for each FFG
-FFGsummary_df <- filterSI.year1 %>%
+FFGsummary_df <- filterSI.year1.SITE %>%
   group_by(SC.Category, SC.Level, FFG) %>%
   summarise(
     mean_d13C = mean(d13C, na.rm = TRUE),
@@ -673,7 +711,7 @@ food.annual <- rbind(Annual.CBOM, Annual.FBOM, Annual.Algae)
 
 # Cleaning up dataframes
 
-Clean.SI.Season <- filterSI.season %>%
+Clean.SI.Season <- filterSI.season.SITE %>%
   dplyr::select(Site, Month, d13C = season.d13C, d15N = season.d15N, Label = Taxa)
 
 Clean.food.season <- food.season %>%
@@ -725,6 +763,7 @@ SI.season.macro.food$FFG[SI.season.macro.food$Label=="Nigronia"]="Predator"
 SI.season.macro.food$FFG[SI.season.macro.food$Label=="Oligochaeta"]="Collector-Gatherer"
 SI.season.macro.food$FFG[SI.season.macro.food$Label=="Orthocladiinae"]="Collector-Gatherer"
 SI.season.macro.food$FFG[SI.season.macro.food$Label=="Peltoperla"]="Shredder"
+SI.season.macro.food$FFG[SI.season.macro.food$Label=="Paracapnia"]="Shredder"
 SI.season.macro.food$FFG[SI.season.macro.food$Label=="Peltoperlidae"]="Shredder"
 SI.season.macro.food$FFG[SI.season.macro.food$Label=="Perlesta"]="Predator"
 SI.season.macro.food$FFG[SI.season.macro.food$Label=="Platycentropus"]="Shredder"
@@ -854,7 +893,7 @@ ggplot(amphi_SI.season.macro.food, aes(x = d13C, y = d15N,
 
 # Cleaning up dataframes
 
-Clean.SI.Annual <- filterSI.year1 %>%
+Clean.SI.Annual <- filterSI.year1.SITE %>%
   dplyr::select(Site, d13C, d15N, Label = Taxa)
 
 Clean.food.annual <- food.annual %>%
@@ -901,6 +940,7 @@ SI.annual.macro.food$FFG[SI.annual.macro.food$Label=="Nigronia"]="Predator"
 SI.annual.macro.food$FFG[SI.annual.macro.food$Label=="Oligochaeta"]="Collector-Gatherer"
 SI.annual.macro.food$FFG[SI.annual.macro.food$Label=="Orthocladiinae"]="Collector-Gatherer"
 SI.annual.macro.food$FFG[SI.annual.macro.food$Label=="Peltoperla"]="Shredder"
+SI.annual.macro.food$FFG[SI.annual.macro.food$Label=="Paracapnia"]="Shredder"
 SI.annual.macro.food$FFG[SI.annual.macro.food$Label=="Peltoperlidae"]="Shredder"
 SI.annual.macro.food$FFG[SI.annual.macro.food$Label=="Perlesta"]="Predator"
 SI.annual.macro.food$FFG[SI.annual.macro.food$Label=="Platycentropus"]="Shredder"
@@ -1272,5 +1312,63 @@ summary(model) # significant δ¹⁵N increases with stream category
 model <- lmer(season.d15N ~ FFG*SC.Category + (1|Month),
             data = filterSI.season)
 summary(model)
+
+
+
+
+
+# Saving sheets---------------------------
+# Install package
+library(openxlsx)
+
+wb <- createWorkbook()
+
+addWorksheet(wb, "SI.Season")
+writeData(wb, "SI.Season", filterSI.season.SITE)
+
+saveWorkbook(wb, "SI.Season.xlsx", overwrite = TRUE)
+
+#--
+wb <- createWorkbook()
+
+addWorksheet(wb, "SI.Annual")
+writeData(wb, "SI.Annual", filterSI.year1.SITE)
+
+saveWorkbook(wb, "SI.Annual.xlsx", overwrite = TRUE)
+#--
+  
+wb <- createWorkbook()
+
+addWorksheet(wb, "Food.Annual")
+writeData(wb, "Food.Annual", food.annual)
+
+saveWorkbook(wb, "Food.Annual.xlsx", overwrite = TRUE)
+
+#--
+wb <- createWorkbook()
+
+addWorksheet(wb, "Food.Season")
+writeData(wb, "Food.Season", food.season)
+
+saveWorkbook(wb, "Food.Season.xlsx", overwrite = TRUE)
+
+#---
+wb <- createWorkbook()
+
+addWorksheet(wb, "Amphi.May")
+writeData(wb, "Amphi.May", amphi_filterSI.season)
+
+saveWorkbook(wb, "Amphi.May.xlsx", overwrite = TRUE)
+
+#--
+amphi_totals <- SI %>% filter(Taxa == "Amphinemura")
+
+wb <- createWorkbook()
+
+addWorksheet(wb, "Amphi.RAW")
+writeData(wb, "Amphi.RAW", amphi_totals)
+
+saveWorkbook(wb, "Amphi.RAW.xlsx", overwrite = TRUE)
+
 
 

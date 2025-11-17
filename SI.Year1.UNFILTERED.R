@@ -235,6 +235,7 @@ SI.Season$FFG[SI.Season$Taxa=="Pycnopsyche"]="Shredder"
 SI.Season$FFG[SI.Season$Taxa=="Rhagovelia"]="Predator"
 SI.Season$FFG[SI.Season$Taxa=="Rhyacophila"]="Predator"
 SI.Season$FFG[SI.Season$Taxa=="Sialis"]="Predator"
+
 SI.Season$FFG[SI.Season$Taxa=="Simulium"]="Collector-Filterer"
 SI.Season$FFG[SI.Season$Taxa=="Tallaperla"]="Shredder"
 SI.Season$FFG[SI.Season$Taxa=="Stenonema"]="Scraper" 
@@ -326,6 +327,9 @@ sten_filterSI.season <- SI.Season %>%
 
 sten_filterSI.annual <- SI.year1 %>%
   filter(Taxa == "Stenonema")
+
+
+
 
 # Color Scheme stuff
 library(RColorBrewer)

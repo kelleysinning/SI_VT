@@ -17,8 +17,15 @@ library(purrr)
 # Set working directory 
 setwd("~/Library/CloudStorage/GoogleDrive-ksinning@vt.edu/My Drive/2023-2025 VT/Data/SI_VT")
 
-SI <- read.csv ("SI Macros Year 1 New.csv") # Adults removed preemptively
+SI <- read.csv ("SI Macros Year 1 ALL.csv") # Adults removed preemptively
 
+# "SI Macros Year 1 ALL.csv" includes all the messy missing data too
+# "SI Macros Year 1 New.csv" filtered clean data
+# 
+
+
+SI <- SI %>%
+  mutate(d13C.permil.VPDB = as.numeric(d13C.permil.VPDB))
 
 # Fixing up some taxa "duplicates"
 SI <- SI %>%
@@ -29,6 +36,7 @@ SI <- SI %>%
 
 SI <- SI %>%
   mutate(Month = ifelse(Month == "October ", "October", Month))
+
 
 # Averaging replicates across seasons
 SI.Season <- SI %>%

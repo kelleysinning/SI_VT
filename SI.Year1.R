@@ -15,9 +15,9 @@ library(dplyr)
 library(purrr)
 
 # Set working directory 
-setwd("~/Library/CloudStorage/GoogleDrive-ksinning@vt.edu/My Drive/2023-2025 VT/Data/SI_VT/SUMMARY SHEETS")
+setwd("~/Library/CloudStorage/GoogleDrive-ksinning@vt.edu/My Drive/2023-2025 VT/Data/SI_VT")
 
-SI <- read.csv ("SI Macros Year 1.csv") # Adults removed preemptively
+SI <- read.csv ("SI Macros Year 1 New.csv") # Adults removed preemptively
 
 
 # Fixing up some taxa "duplicates"
